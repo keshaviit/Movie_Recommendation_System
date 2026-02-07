@@ -6,9 +6,12 @@ import requests
 movies = pickle.load(open(
     'anaconda_projects_9c4ad3d0-7ea1-4062-a737-4b775f3df230_movie_list.pkl', 'rb'
 ))
-similarity = pickle.load(open(
-    'anaconda_projects_9c4ad3d0-7ea1-4062-a737-4b775f3df230_similarity_list.pkl', 'rb'
-))
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+cv = CountVectorizer(max_features=5000, stop_words='english')
+vectors = cv.fit_transform(movies['tags']).toarray()
+similarity = cosine_similarity(vectors)
 
 st.title("🎬 Movie Recommender System")
 
@@ -39,9 +42,9 @@ def recommend(movie):
     recommended_movies_posters = []
 
     for i in movies_list:
-        movie_id =movie_id = movies.iloc[i[0]]['id']
+        movie_id = movies.iloc[i[0]]['id']
 
-        recommended_movies.append(movies.iloc[i[0]].title)
+        recommended_movies.append(movies.iloc[i[0]]['title'])
         recommended_movies_posters.append(fetch_poster(movie_id))
 
     return recommended_movies, recommended_movies_posters
